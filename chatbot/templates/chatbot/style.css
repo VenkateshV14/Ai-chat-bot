@@ -1,0 +1,206 @@
+/* <style>
+/* Reset and Base Styles */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #333;
+}
+html {
+  scroll-behavior: smooth;
+}
+/* Fixed Navbar/Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+header img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 2px solid #fff;
+}
+header h1 {
+  font-size: 2.5em;
+  margin: 0;
+  letter-spacing: 1px;
+}
+/* Chat Container */
+#chat-container {
+  max-width: 700px;
+  margin: 120px auto 30px;  /* Top margin to account for fixed header */
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+/* Messages Area */
+#messages {
+  height: 500px; /* Increased height for chat space */
+  overflow-y: auto;
+  background: #f7f9fc;
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+/* Message Animations */
+.message {
+  margin: 12px 0;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+.message.user {
+  text-align: right;
+  color: #1976d2;
+}
+.message.bot {
+  text-align: left;
+  color: #388e3c;
+}
+/* Input Field */
+input[type="text"] {
+  width: 100%;
+  padding: 14px;
+  font-size: 1em;
+  border: 1px solid #b0bec5;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+input[type="text"]:focus {
+  border-color: #1e88e5;
+}
+/* Button Group */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.button-group button {
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: #1e88e5;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+.button-group button i {
+  margin-right: 8px;
+}
+.button-group button:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+}
+/* Export Link */
+.export-link-container {
+  margin-top: 15px;
+  text-align: center;
+}
+a.export-link {
+  text-decoration: none;
+  color: #1e88e5;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+a.export-link:hover {
+  color: #1565c0;
+}
+/* History Area */
+#history {
+  display: none; /* Hide chat history initially */
+  margin-top: 25px;
+}
+.history-session {
+  background: #eceff1;
+  border: 1px solid #90a4ae;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 12px 0;
+}
+/* Notification Area */
+#notification {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1em;
+  color: #1565c0;
+  font-weight: 500;
+}
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Suggestions Area */
+#suggestions {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f0f4c3;
+  border-radius: 8px;
+  border: 1px solid #c0ca33;
+}
+#suggestions h3 {
+  margin: 0 0 10px;
+}
+#suggestion-list {
+  list-style-type: none;
+  padding: 0;
+}
+/* Quick Reply Buttons */
+#quick-replies {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#quick-replies button {
+  padding: 10px 15px;
+  font-size: 0.9em;
+  border: none;
+  border-radius: 8px;
+  background: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+#quick-replies button:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+/* Features Section */
+#features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.feature {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1565c0;
+  font-size: 1.2em;
+  padding: 15px 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 10px;
+  flex: 1 1 45%; /* Responsive width */
+  text-align: center;
+}
+</style> */

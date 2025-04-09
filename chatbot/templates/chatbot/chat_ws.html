@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Chat with WebSockets</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #chat-container { max-width: 600px; margin: 20px auto; border: 1px solid #ccc; padding: 20px; }
+    #messages { height: 400px; overflow-y: scroll; border-bottom: 1px solid #ccc; margin-bottom: 10px; padding: 10px; }
+    .message { margin: 10px 0; }
+    .user { text-align: right; color: blue; }
+    .bot { text-align: left; color: green; }
+    button { padding: 10px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h2>Real-Time Chat</h2>
+    <div id="messages"></div>
+    <input type="text" id="chat-input" placeholder="Type your message..." style="width:80%; padding:10px;" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const chatSocket = new WebSocket(
+      'ws://' + window.location.host + '/ws/chat/'
+    );
+  
+    chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      const message = data.message;
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML += `<div class="message bot"><strong>Bot:</strong> ${message}</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+  
+    chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    };
+  
+    function sendMessage() {
+      const inputElement = document.getElementById("chat-input");
+      const message = inputElement.value.trim();
+      if (!message) return;
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
+      chatSocket.send(JSON.stringify({ 'message': message }));
+      inputElement.value = "";
+    }
+  
+    document.getElementById("chat-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+  
+</body>
+</html>

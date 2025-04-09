@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced AI Chatbot</title>
+   <!-- Load static files -->
+   {% load static %}
+  <link rel="icon" href="{% static 'images/chatbot.avif' %}" type="image/x-icon">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        integrity="sha512-F2NsPvtZquxd0PYl29aqQj+MYnVJov6IqFvP8Yyue0N8Ysd8/tI6NJ3Gz0U+e59OR6/c+soR3Wm2kp92UzV8XA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Internal CSS -->
+  <style>
+    /* Reset and Base Styles */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #333;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Fixed Navbar/Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #1e88e5, #1565c0);
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+    header img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 2px solid #fff;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    /* Chat Container */
+    #chat-container {
+      max-width: 700px;
+      margin: 120px auto 30px;  /* Top margin to account for fixed header */
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      position: relative; /* For positioning the history sidebar */
+    }
+
+    /* Messages Area */
+    #messages {
+      height: 400px;
+      overflow-y: auto;
+      background: #f7f9fc;
+      border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Message Animations */
+    .message {
+      margin: 12px 0;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+    .message.user {
+      text-align: right;
+      color: #1976d2;
+    }
+    .message.bot {
+      text-align: left;
+      color: #388e3c;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      text-align: left;
+      color: #888;
+      font-style: italic;
+      margin: 12px 0;
+    }
+
+    /* Input Field */
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      font-size: 1em;
+      border: 1px solid #b0bec5;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #1e88e5;
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .button-group button {
+      padding: 12px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background: #1e88e5;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    .button-group button i {
+      margin-right: 8px;
+    }
+    .button-group button:hover {
+      background: #1565c0;
+      transform: translateY(-2px);
+    }
+
+    /* Export Link */
+    .export-link-container {
+      margin-top: 15px;
+      text-align: center;
+    }
+    a.export-link {
+      text-decoration: none;
+      color: #1e88e5;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    a.export-link:hover {
+      color: #1565c0;
+    }
+    /* Dark Mode Styles */
+    
+    body.dark-mode {
+      background: #121212;
+      color: #ffffff;
+    }
+    body.dark-mode header {
+      background: #1e1e1e;
+    }
+    body.dark-mode #chat-container {
+      background: #1e1e1e;
+      color: #ffffff;
+    }
+    body.dark-mode #messages {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+    body.dark-mode #suggestions {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+    body.dark-mode .suggestion-button {
+      background: #333;
+      border: 1px solid #555;
+    }
+    body.dark-mode .suggestion-button:hover {
+      background: #444;
+    }
+    /* Dark Mode Toggle */
+    #theme-toggle {
+      padding: 10px;
+      margin-left: 30px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e88e5;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    #theme-toggle:hover {
+      background: #e0e0e0;
+    }
+    body.dark-mode #theme-toggle {
+      background: #444;
+      color: #fff;
+    }
+    body.dark-mode #theme-toggle:hover {
+      background: #555;
+    }
+    
+    /* Language Selection */
+    #language-select {
+      margin-left: 20px; /* Space between title and language selector */
+      padding: 10px;
+      border: 1px solid #b0bec5;
+      border-radius: 8px;
+      font-size: 1em;
+      background: #fff; /* White background for dropdown */
+    }
+
+    /* History Area */
+    #history {
+      position: fixed;
+      right: -300px; /* Initially hidden */
+      top: 120px; /* Below the header */
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    #history.open {
+      right: 0; /* Show the history */
+    }
+    .history-session {
+      background: #eceff1;
+      border: 1px solid #90a4ae;
+      border-radius: 8px;
+      padding: 15px;
+      padding-right: 20px;
+      margin-left: 20px;
+      margin: 12px 0;
+    }
+
+    /* Notification Area */
+    #notification {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 1em;
+      color: #1565c0;
+      font-weight: 500;
+    }
+
+    /* Fade In Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Suggestions Area */
+    #suggestions {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .suggestion-button {
+      padding: 10px;
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s ease;
+    }
+    .suggestion-button:hover {
+      background: #bbdefb;
+    }
+    /* Features Section */
+#features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+.feature {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1565c0;
+  font-size: 1.2em;
+  padding: 15px 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 10px;
+  flex: 1 1 200px; /* Allow flexibility in size */
+  text-align: center;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  #suggestions {
+    width: 100%; /* Full width on smaller screens */
+    margin-left: 0; /* Remove left margin */
+  }
+  #language-select{
+    margin-top: 10px;
+   
+  }
+  .chat-container{
+    margin-top: 60px;
+    padding-top: 40px;
+  }
+  
+}
+  </style>
+</head>
+<body>
+  <!-- <header>
+    <img src="https://img.freepik.com/premium-photo/robot-chatbot-ai-bot-cartoon-logo-badge-design-symbol-cartoon-flat-style-illustration-generative-ai_159242-28150.jpg" alt="Chatbot Logo" />
+    <h1>AI Chatbot</h1>
+  </header> -->
+  <header>
+    <img class="img" src="https://img.freepik.com/premium-photo/robot-chatbot-ai-bot-cartoon-logo-badge-design-symbol-cartoon-flat-style-illustration-generative-ai_159242-28150.jpg" alt="Chatbot Logo" />
+    <h1>AI Chatbot</h1>
+    <select id="language-select">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="te">Telugu</option>
+      <option value="kn">Kannada</option>
+    </select>
+    <div>
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button> <!-- Theme toggle button -->
+  </div>
+  </header>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="notification"></div>
+    <input type="text" id="user-input" placeholder="Type a message or speak..." />
+    <div class="button-group">
+      <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+      <button onclick="startListening()"><i class="fa-solid fa-microphone"></i> Voice</button>
+      <button onclick="newChat()"><i class="fa-solid fa-plus-circle"></i> New Chat</button>
+      <button onclick="toggleHistory()"><i class="fa-solid fa-history"></i> History</button>
+    </div>
+    <div class="export-link-container">
+      <a class="export-link" href="/api/export_chat/{{ session.session_id }}/" download>
+        <i class="fa-solid fa-download"></i> Export Chat Session
+      </a>
+    </div>
+    <div id="suggestions"></div> <!-- Auto-suggestions area -->
+  </div>
+  
+  <div id="history"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    // Theme toggle function
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const themeToggleButton = document.getElementById('theme-toggle');
+      if (document.body.classList.contains('dark-mode')) {
+        themeToggleButton.innerHTML = '☀️'; // Change to sun icon for light mode
+      } else {
+        themeToggleButton.innerHTML = '🌙'; // Change to moon icon for dark mode
+      }
+    }
+ </script>
+  <script>
+    // Speech-to-Text: Capture voice input using the Web Speech API.
+    function startListening() {
+      const notify = document.getElementById("notification");
+      notify.innerText = "Listening... Please speak now.";
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Your browser does not support speech recognition.");
+        notify.innerText = "";
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        notify.innerText = ""; // Clear notification on result
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("user-input").value = transcript;
+      };
+      recognition.onerror = function(event) {
+        console.error("Speech recognition error:", event.error);
+        notify.innerText = "Error: " + event.error;
+      };
+      recognition.onend = function() {
+        notify.innerText = "";
+      };
+      recognition.start();
+    }
+    
+    // Text-to-Speech: Read the given text aloud using the Web Speech API.
+    function speakText(text) {
+      if (!window.speechSynthesis) {
+        console.warn("Text-to-speech not supported in your browser.");
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+    
+    // Send message to the chatbot API, display response, and speak it out.
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+      document.getElementById("messages").innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
+      input.value = "";
+
+      // Show typing indicator
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator';
+      typingIndicator.innerText = "Bot is typing...";
+      document.getElementById("messages").appendChild(typingIndicator);
+  
+      try {
+        const response = await fetch("/api/chat/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        const botReply = data.reply || "No response";
+        
+        // Remove typing indicator
+        typingIndicator.remove();
+        
+        document.getElementById("messages").innerHTML += `<div class="message bot"><strong>Bot:</strong> ${marked.parse(botReply)}</div>`;
+        speakText(botReply);
+
+        // Show auto-suggestions
+        showSuggestions(data.suggestions || []);
+      } catch (error) {
+        console.error("Error:", error);
+        typingIndicator.remove();
+        document.getElementById("messages").innerHTML += `<div class="message bot"><strong>Bot:</strong> Error fetching response.</div>`;
+      }
+    }
+
+    // Show auto-suggestions
+    function showSuggestions(suggestions) {
+      const suggestionsContainer = document.getElementById("suggestions");
+      suggestionsContainer.innerHTML = ""; // Clear previous suggestions
+      if (suggestions.length > 0) {
+        suggestions.forEach(suggestion => {
+          const button = document.createElement('div');
+          button.className = 'suggestion-button';
+          button.innerText = suggestion;
+          button.onclick = () => {
+            document.getElementById("user-input").value = suggestion;
+            sendMessage(); // Send the suggestion as a message
+          };
+          suggestionsContainer.appendChild(button);
+        });
+      }
+    }
+    
+    // Clear the current conversation.
+    async function newChat() {
+      try {
+        await fetch("/api/clear_conversation/", { method: "POST" });
+        document.getElementById("messages").innerHTML = "";
+        document.getElementById("suggestions").innerHTML = ""; // Clear suggestions
+      } catch (err) {
+        console.error("Error clearing conversation:", err);
+      }
+    }
+    
+    // Load previous chat history from the server and display it.
+    async function loadHistory() {
+      try {
+        const response = await fetch("/api/chat_history/");
+        const data = await response.json();
+        let historyHtml = "<h3>Previous Chat Sessions</h3>";
+        if (data.history && data.history.length > 0) {
+          data.history.forEach(session => {
+            historyHtml += `<div class="history-session">
+              <strong>Session ${session.session_id}</strong> (Started: ${session.created_at})<br/>
+              ${session.messages.map(m => `<p><strong>${m.role}:</strong> ${m.content} <em>${m.timestamp}</em></p>`).join('')}
+            </div>`;
+          });
+        } else {
+          historyHtml += "<p>No previous sessions found.</p>";
+        }
+        document.getElementById("history").innerHTML = historyHtml;
+      } catch (error) {
+        console.error("Error loading chat history:", error);
+      }
+    }
+
+    // Toggle the visibility of the chat history sidebar.
+    function toggleHistory() {
+      const historyDiv = document.getElementById("history");
+      if (historyDiv.classList.contains("open")) {
+        historyDiv.classList.remove("open");
+      } else {
+        loadHistory(); // Load history when opening
+        historyDiv.classList.add("open");
+      }
+    }
+
+    // Submit message on Enter key press.
+    document.getElementById("user-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+
+  <!-- Features Section -->
+  <div id="features">
+    <div class="feature left" >💬 Real-time AI Conversations</div>
+    <div class="feature right" >🎙️ Voice Recognition</div>
+    <div class="feature left" >🔊 Text-to-Speech Responses</div>
+    <div class="feature right">💾 Chat History & Export</div>
+    <div class="feature left" >🌐 Multilanguage Support</div>
+    <div class="feature right">⚡ Fast & Secure API</div>
+  </div>
+</body>
+</html>
