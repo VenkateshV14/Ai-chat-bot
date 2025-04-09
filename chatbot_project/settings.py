@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-(7+gr$7h(c1t)8lh)&*bz6vkia@72e(%f3o5_wd5*!c+u$)k$2"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -132,10 +132,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # chatbot_project/settings.py
 import os
 
-OPENROUTER_API_KEY = os.getenv(
-    "OPENROUTER_API_KEY",
-    "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",
-)
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # ✅ Django local server
