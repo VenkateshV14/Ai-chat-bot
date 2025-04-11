@@ -10,7 +10,7 @@
 ![Cluster Active](images/eks-cluster-active.JPG)
 - ✅ Node group in "Active" status 
 ![Node Group Active](images/) 
-- ✅ EC2 instance auto-created
+
 
 ## 💡 Notes
 - Had issues with node group failing due to wrong AMI type
