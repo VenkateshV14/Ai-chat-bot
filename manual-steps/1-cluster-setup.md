@@ -11,7 +11,6 @@
 - ✅ Node group in "Active" status 
 ![Node Group Active](images/) 
 
-
 ## 💡 Notes
 - Had issues with node group failing due to wrong AMI type
 - Fixed by switching to AL2_x86_64
